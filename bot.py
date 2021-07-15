@@ -179,8 +179,9 @@ async def download_video(event):
     if song:
         for single_file in filename:
             if os.path.exists(single_file):
+                LOGGER.info(f"Processing - {single_file}")
                 caption_rts = os.path.basename(single_file)
-                force_document = True
+                force_document = False
                 supports_streaming = False
                 document_attributes = []
                 if single_file.endswith((".mp4", ".mp3", ".flac", ".webm")):
@@ -207,11 +208,11 @@ async def download_video(event):
                         ]
                     try:
                         ytdl_data_name_audio = os.path.basename(single_file)
-                        print(ytdl_data_name_audio)
+                        LOGGER.info(f"Uploading - {ytdl_data_name_audio}")
                         await client.send_file(
                             event.chat_id,
                             single_file,
-                            caption=f"`{ytdl_data_name_audio}`",
+                            caption=f"**File Name:** __{ytdl_data_name_audio}__\n**Thanks for Using Bot**",
                             force_document=force_document,
                             supports_streaming=supports_streaming,
                             allow_cache=False,
@@ -219,19 +220,21 @@ async def download_video(event):
                             attributes=document_attributes,
                             progress_callback=lambda d, t: asyncio.get_event_loop(
                                 ).create_task(
-                                    progress(d, t, msg, c_time, "Uploading..",
+                                    progress(d, t, msg, c_time, "**💬 Uploading..**",
                                     f"{ytdl_data_name_audio}")))
                     except Exception as e:
                         await client.send_message(
                             event.chat_id,
-                            "{} caused `{}`".format(caption_rts, str(e)),
+                            "{} caused {}".format(caption_rts, str(e)),
                         )
                         continue
-                    os.remove(single_file)
+        os.remove(single_file)
         shutil.rmtree(out_folder)
+        LOGGER.info(f"Cleaning - {out_folder}")
     if video:
         for single_file in filename:
             if os.path.exists(single_file):
+                LOGGER.info(f"Processing - {single_file}")
                 caption_rts = os.path.basename(single_file)
                 force_document = False
                 supports_streaming = True
@@ -260,10 +263,11 @@ async def download_video(event):
                         ]
                     try:
                         ytdl_data_name_video = os.path.basename(single_file)
+                        LOGGER.info(f"Uploading - {ytdl_data_name_video}")
                         await client.send_file(
                             event.chat_id,
                             single_file,
-                            caption=f"`{ytdl_data_name_video}`",
+                            caption=f"**File Name:** __{ytdl_data_name_video}__\n**Thanks for Using Bot**",
                             force_document=force_document,
                             supports_streaming=supports_streaming,
                             allow_cache=False,
@@ -271,16 +275,17 @@ async def download_video(event):
                             attributes=document_attributes,
                             progress_callback=lambda d, t: asyncio.get_event_loop(
                                 ).create_task(
-                                    progress(d, t, msg, c_time, "Uploading..",
+                                    progress(d, t, msg, c_time, "**💬 Uploading..**",
                                     f"{ytdl_data_name_video}")))
                     except Exception as e:
                         await client.send_message(
                             event.chat_id,
-                            "{} caused `{}`".format(caption_rts, str(e)),
+                            "{} caused {}".format(caption_rts, str(e)),
                         )
                         continue
-                    os.remove(single_file)
+        os.remove(single_file)
         shutil.rmtree(out_folder)
+        LOGGER.info(f"Cleaning - {out_folder}")
         
 def get_lst_of_files(input_directory, output_lst):
     filesinfolder = os.listdir(input_directory)
