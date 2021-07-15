@@ -20,14 +20,14 @@ from hachoir.parser import createParser
 from telethon.tl.types import DocumentAttributeAudio
 import shutil
 
-# --- CREATE TELEGRAM CLIENT --- #
-client = TelegramClient('bot', int(os.environ.get("APP_ID")), os.environ.get("API_HASH")).start(bot_token=os.environ.get("TOKEN"))
-
 logging.basicConfig(
     level=logging.INFO,
     format='%(name)s - [%(levelname)s] - %(message)s'
 )
 LOGGER = logging.getLogger(__name__)
+
+# --- CREATE TELEGRAM CLIENT --- #
+client = TelegramClient('bot', int(os.environ.get("APP_ID")), os.environ.get("API_HASH")).start(bot_token=os.environ.get("TOKEN"))
 
 out_folder = "downloads/youtubedl/"
 thumb_image_path = "downloads/thumb_image.jpg"
@@ -49,13 +49,14 @@ async def progress(current, total, event, start, type_of_ps, file_name=None):
             ''.join(["░" for i in range(10 - math.floor(percentage / 10))]),
             round(percentage, 2))
         tmp = progress_str + \
-            "{0} of {1}\nETA: {2}".format(
+            "{0} of {1}\n**Speed:** {2}/s\n**ETA:** {3}".format(
                 humanbytes(current),
                 humanbytes(total),
+                humanbytes(speed),
                 time_formatter(estimated_total_time)
             )
         if file_name:
-            await event.edit("{}\nFile Name: `{}`\n{}".format(
+            await event.edit("{}\n**File Name:** {}\n{}".format(
                 type_of_ps, file_name, tmp))
         else:
             await event.edit("{}\n{}".format(type_of_ps, tmp))
@@ -289,5 +290,6 @@ def get_lst_of_files(input_directory, output_lst):
             return get_lst_of_files(current_file_name, output_lst)
         output_lst.append(current_file_name)
     return output_lst
-  
+ 
+print("> Bot Started ")
 client.run_until_disconnected()
