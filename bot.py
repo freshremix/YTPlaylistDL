@@ -232,7 +232,7 @@ async def download_video(event):
                         continue
                     os.remove(single_file)
         shutil.rmtree(out_folder)
-        LOGGER.info(f"Cleaning - {single_file} | {out_folder}")
+        LOGGER.info(f"Cleaning - {out_folder}")
     if video:
         for single_file in filename:
             if os.path.exists(single_file):
