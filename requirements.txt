@@ -1,3 +1,4 @@
 telethon
+hachoir
 youtube_dl
 asyncio
