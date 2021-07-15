@@ -29,11 +29,6 @@ LOGGER = logging.getLogger(__name__)
 # --- CREATE TELEGRAM CLIENT --- #
 client = TelegramClient('bot', int(os.environ.get("APP_ID")), os.environ.get("API_HASH")).start(bot_token=os.environ.get("TOKEN"))
 
-out_folder = "downloads/youtubedl/"
-thumb_image_path = "downloads/thumb_image.jpg"
-if not os.path.isdir(out_folder):
-    os.makedirs(out_folder)
-
 # --- PROGRESS DEF --- #
 async def progress(current, total, event, start, type_of_ps, file_name=None):
     now = time.time()
@@ -89,6 +84,13 @@ def time_formatter(milliseconds: int) -> str:
 
 @client.on(events.NewMessage(pattern='^/playlist (audio|video) (.*)'))
 async def download_video(event):
+
+    out_folder = f"downloads/{event.sender_id}/"
+    thumb_image_path = "downloads/thumb_image.jpg"
+    if not os.path.isdir(out_folder):
+        LOGGER.info(f"Creating folder \"{out_folder}\"")
+        os.makedirs(out_folder)
+
     url = event.pattern_match.group(2)
     type = event.pattern_match.group(1).lower()
 
@@ -230,7 +232,7 @@ async def download_video(event):
                         continue
         os.remove(single_file)
         shutil.rmtree(out_folder)
-        LOGGER.info(f"Cleaning - {out_folder}")
+        LOGGER.info(f"Cleaning - {single_file} | {out_folder}")
     if video:
         for single_file in filename:
             if os.path.exists(single_file):
@@ -285,7 +287,7 @@ async def download_video(event):
                         continue
         os.remove(single_file)
         shutil.rmtree(out_folder)
-        LOGGER.info(f"Cleaning - {out_folder}")
+        LOGGER.info(f"Cleaning - {single_file} | {out_folder}")
         
 def get_lst_of_files(input_directory, output_lst):
     filesinfolder = os.listdir(input_directory)
