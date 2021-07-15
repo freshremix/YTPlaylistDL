@@ -28,7 +28,7 @@ if not os.path.isdir(out_folder):
     os.makedirs(out_folder)
 
 # --- PROGRESS DEF --- #
-async def progress(current, total, event, start, type_of_ps):
+async def progress(current, total, event, start, type_of_ps, None):
     now = time.time()
     diff = now - start
     if round(diff % 10.00) == 0 or current == total:
