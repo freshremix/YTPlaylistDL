@@ -271,10 +271,6 @@ async def download_video(event):
                     os.remove(single_file)
         shutil.rmtree(out_folder)
         
-
-
-
-
 def get_lst_of_files(input_directory, output_lst):
     filesinfolder = os.listdir(input_directory)
     for file_name in filesinfolder:
@@ -283,3 +279,5 @@ def get_lst_of_files(input_directory, output_lst):
             return get_lst_of_files(current_file_name, output_lst)
         output_lst.append(current_file_name)
     return output_lst
+  
+client.run_until_disconnected()
