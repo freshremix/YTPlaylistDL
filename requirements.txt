@@ -1,0 +1,3 @@
+telethon
+youtube_dl
+asyncio
