@@ -230,7 +230,7 @@ async def download_video(event):
                             "{} caused {}".format(caption_rts, str(e)),
                         )
                         continue
-        os.remove(single_file)
+                    os.remove(single_file)
         shutil.rmtree(out_folder)
         LOGGER.info(f"Cleaning - {single_file} | {out_folder}")
     if video:
@@ -285,9 +285,9 @@ async def download_video(event):
                             "{} caused {}".format(caption_rts, str(e)),
                         )
                         continue
-        os.remove(single_file)
+                    os.remove(single_file)
         shutil.rmtree(out_folder)
-        LOGGER.info(f"Cleaning - {single_file} | {out_folder}")
+        LOGGER.info(f"Cleaning - {out_folder}")
         
 def get_lst_of_files(input_directory, output_lst):
     filesinfolder = os.listdir(input_directory)
