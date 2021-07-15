@@ -2,6 +2,7 @@ import os
 import time
 import math
 import asyncio
+import logging
 from youtube_dl import YoutubeDL
 from youtube_dl.utils import (DownloadError, ContentTooShortError,
                               ExtractorError, GeoRestrictedError,
@@ -22,13 +23,19 @@ import shutil
 # --- CREATE TELEGRAM CLIENT --- #
 client = TelegramClient('bot', int(os.environ.get("APP_ID")), os.environ.get("API_HASH")).start(bot_token=os.environ.get("TOKEN"))
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(name)s - [%(levelname)s] - %(message)s'
+)
+LOGGER = logging.getLogger(__name__)
+
 out_folder = "downloads/youtubedl/"
 thumb_image_path = "downloads/thumb_image.jpg"
 if not os.path.isdir(out_folder):
     os.makedirs(out_folder)
 
 # --- PROGRESS DEF --- #
-async def progress(current, total, event, start, type_of_ps, None):
+async def progress(current, total, event, start, type_of_ps, file_name=None):
     now = time.time()
     diff = now - start
     if round(diff % 10.00) == 0 or current == total:
@@ -42,13 +49,16 @@ async def progress(current, total, event, start, type_of_ps, None):
             ''.join(["░" for i in range(10 - math.floor(percentage / 10))]),
             round(percentage, 2))
         tmp = progress_str + \
-            "{0} of {1}\nSpeed: {2}\nETA: {3}".format(
+            "{0} of {1}\nETA: {2}".format(
                 humanbytes(current),
                 humanbytes(total),
-                humanbytes(speed),
                 time_formatter(estimated_total_time)
             )
-        await event.edit("{}\n{}".format(type_of_ps, tmp))
+        if file_name:
+            await event.edit("{}\nFile Name: `{}`\n{}".format(
+                type_of_ps, file_name, tmp))
+        else:
+            await event.edit("{}\n{}".format(type_of_ps, tmp))
 
 # --- HUMANBYTES DEF --- #
 def humanbytes(size):
@@ -164,7 +174,7 @@ async def download_video(event):
         await msg.edit(f"{str(type(e)): {str(e)}}")
         return
     c_time = time.time()
-    await msg.edit("YouTube Playlist Downloading Processing Now.\nDo not add new tasks. else Banned!")
+    await msg.edit("YouTube Playlist Downloading Processing Now.\nDo not add new tasks. else Ban!")
     if song:
         for single_file in filename:
             if os.path.exists(single_file):
