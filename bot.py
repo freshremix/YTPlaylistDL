@@ -181,7 +181,7 @@ async def download_video(event):
     if song:
         for single_file in filename:
             if os.path.exists(single_file):
-                LOGGER.info(f"Processing - {single_file}")
+                LOGGER.info(f"Processing : {single_file}")
                 caption_rts = os.path.basename(single_file)
                 force_document = False
                 supports_streaming = False
@@ -210,7 +210,7 @@ async def download_video(event):
                         ]
                     try:
                         ytdl_data_name_audio = os.path.basename(single_file)
-                        LOGGER.info(f"Uploading - {ytdl_data_name_audio}")
+                        LOGGER.info(f"Uploading : {ytdl_data_name_audio}")
                         await client.send_file(
                             event.chat_id,
                             single_file,
@@ -231,12 +231,13 @@ async def download_video(event):
                         )
                         continue
                     os.remove(single_file)
+                    LOGGER.warning(f"Removing : {single_file}")
         shutil.rmtree(out_folder)
-        LOGGER.info(f"Cleaning - {out_folder}")
+        LOGGER.warning(f"Cleaning : {out_folder}")
     if video:
         for single_file in filename:
             if os.path.exists(single_file):
-                LOGGER.info(f"Processing - {single_file}")
+                LOGGER.info(f"Processing : {single_file}")
                 caption_rts = os.path.basename(single_file)
                 force_document = False
                 supports_streaming = True
@@ -265,7 +266,7 @@ async def download_video(event):
                         ]
                     try:
                         ytdl_data_name_video = os.path.basename(single_file)
-                        LOGGER.info(f"Uploading - {ytdl_data_name_video}")
+                        LOGGER.info(f"Uploading : {ytdl_data_name_video}")
                         await client.send_file(
                             event.chat_id,
                             single_file,
@@ -286,8 +287,9 @@ async def download_video(event):
                         )
                         continue
                     os.remove(single_file)
+                    LOGGER.warning(f"Removing : {single_file}")
         shutil.rmtree(out_folder)
-        LOGGER.info(f"Cleaning - {out_folder}")
+        LOGGER.warning(f"Cleaning : {out_folder}")
         
 def get_lst_of_files(input_directory, output_lst):
     filesinfolder = os.listdir(input_directory)
