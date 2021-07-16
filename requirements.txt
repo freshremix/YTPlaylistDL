@@ -4,4 +4,4 @@ requests
 youtube_dl
 youtube_search
 asyncio
-PIL
+pillow
