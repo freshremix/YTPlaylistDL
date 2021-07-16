@@ -1,4 +1,6 @@
 telethon
 hachoir
+requests
 youtube_dl
+youtube_search
 asyncio
