@@ -104,8 +104,6 @@ async def upload(thumb_image_path, c_time, msg, single_file, curr):
 			"{} caused {}".format(caption_rts, str(e)),
 		)
 
-ptype = {}
-
 @client.on(events.NewMessage(pattern='^/ping'))
 async def pingwithtg(event):
 	await event.reply("If you see this message, You verified Pedo")
