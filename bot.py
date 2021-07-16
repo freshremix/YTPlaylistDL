@@ -109,6 +109,13 @@ async def upload(thumb_image_path, c_time, msg, single_file, curr):
 async def pingwithtg(event):
 	await event.reply("If you see this message, You verified Pedo")
 
+@client.on(events.CallbackQuery(pattern='vid'))
+async def ptype_vid(event):
+	ptype = "video"
+
+@client.on(events.CallbackQuery(pattern='aud'))
+async def ptype_aud(event):
+	ptype = "audio"
 
 @client.on(events.NewMessage(pattern='^/playlist (.*)'))
 async def download_video(event):
@@ -256,15 +263,6 @@ def get_lst_of_files(input_directory, output_lst):
 			return get_lst_of_files(current_file_name, output_lst)
 		output_lst.append(current_file_name)
 	return output_lst
-
-
-@client.on(events.CallbackQuery(pattern='vid'))
-async def ptype_vid(event):
-	ptype = "video"
-
-@client.on(events.CallbackQuery(pattern='aud'))
-async def ptype_aud(event):
-	ptype = "audio"
  
 print("> Bot Started ")
 client.run_until_disconnected()
