@@ -3,8 +3,6 @@ import time
 import math
 import asyncio
 import logging
-import requests
-from PIL import Image
 from youtube_dl import YoutubeDL
 from youtube_dl.utils import (DownloadError, ContentTooShortError,
 							  ExtractorError, GeoRestrictedError,
@@ -14,7 +12,7 @@ from asyncio import sleep
 from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeVideo
 
 from telethon import TelegramClient
-from telethon import events
+from telethon import events, Button
 from telethon.sessions import StringSession
 
 from hachoir.metadata import extractMetadata
@@ -85,49 +83,49 @@ def time_formatter(milliseconds: int) -> str:
 	return tmp[:-2]
 
 # --- FILE UPLOAD DEF --- #
-async def upload(thumb_image_path, c_time, msg, document_attributes, single_file, curr):
+async def upload(thumb_image_path, c_time, msg, single_file, curr):
 	try:
-		ytdl_data_name_audio = os.path.basename(single_file)
-		LOGGER.info(f"Uploading : {ytdl_data_name_audio}")
+		file_name = os.path.basename(single_file)
+		LOGGER.info(f"Uploading : {file_name}")
 		await client.send_file(
 			curr.chat_id,
 			single_file,
-			caption=f"**File Name:** __{ytdl_data_name_audio}__\n**Thanks for Using Bot**",
+			caption=f"**File Name:** {file_name}__\n**Thanks for Using Bot**",
 			force_document=False,
 			supports_streaming=True,
 			allow_cache=False,
 			thumb=thumb_image_path,
-			reply_to=curr.message.id,
-			attributes=document_attributes,
 			progress_callback=lambda d, t: asyncio.get_event_loop(
 				).create_task(
 					progress(d, t, msg, c_time, "**💬 Uploading..**",
-					f"{ytdl_data_name_audio}")))
+					f"{file_name}")))
 	except Exception as e:
-		await client.send_message(
-			event.chat_id,
+		await msg.edit(
 			"{} caused {}".format(caption_rts, str(e)),
 		)
+
 
 @client.on(events.NewMessage(pattern='^/ping'))
 async def pingwithtg(event):
 	await event.reply("If you see this message, You verified Pedo")
 
-@client.on(events.NewMessage(pattern='^/playlist (audio|video) (.*)'))
+
+@client.on(events.NewMessage(pattern='^/playlist (.*)'))
 async def download_video(event):
 
 	out_folder = f"downloads/{event.sender_id}/"
-	#thumb_image_path = "downloads/thumb_image.jpg"
 	if not os.path.isdir(out_folder):
 		LOGGER.info(f"Creating folder \"{out_folder}\"")
 		os.makedirs(out_folder)
 
-	url = event.pattern_match.group(2)
-	type = event.pattern_match.group(1).lower()
+	url = event.pattern_match.group(1)
 
-	msg = await event.reply("Processing...")
+	msg = await event.reply("💬 Choose file type before download.", buttons=[
+			Button.inline('📹 Video', data='vid'),
+			Button.inline('🎵 Audio', data='aud')
+		])
 
-	if type == "audio":
+	if ptype == "audio":
 		opts = {
 			'format':'bestaudio',
 			'addmetadata':True,
@@ -150,7 +148,7 @@ async def download_video(event):
 		video = False
 		song = True
 
-	elif type == "video":
+	elif ptype == "video":
 		opts = {
 			'format':'best',
 			'addmetadata':True,
@@ -208,83 +206,47 @@ async def download_video(event):
 		await msg.edit(f"{str(type(e)): {str(e)}}")
 		return
 	c_time = time.time()
-	await msg.edit("Downladed. Now Processing with FFmpeg")
+	await msg.edit("Downladed Success! ✅")
+
 	if song:
+
 		for single_file in filename:
-			if os.path.exists(os.path.splitext(single_file)[0] + ".webp"):
-				im = Image.open(os.path.splitext(single_file)[0] + ".webp").convert("RGB")
-				im.save(os.path.splitext(single_file)[0] + ".jpg", "jpeg")
-				thumb_image_path = os.path.splitext(single_file)[0] + ".jpg"
-			if os.path.exists(single_file):
-				LOGGER.info(f"Processing : {single_file}")
-				caption_rts = os.path.basename(single_file)
-				document_attributes = []
-				if single_file.endswith((".mp4", ".mp3", ".flac", ".webm")):
-					metadata = extractMetadata(createParser(single_file))
-					duration = 0
-					width = 0
-					height = 0
-					if metadata.has("duration"):
-						duration = metadata.get('duration').seconds
-					#if os.path.exists(thumb_image_path):
-					#	metadata = extractMetadata(createParser(thumb_image_path))
-					#	if metadata.has("width"):
-					#		width = metadata.get("width")
-					#	if metadata.has("height"):
-					#		height = metadata.get("height")
-					#	document_attributes = [
-					#		DocumentAttributeVideo(
-					#			duration=duration,
-					#			w=width,
-					#			h=height,
-					#			round_message=False,
-					#			supports_streaming=True
-					#		)
-					#	]
-					await upload(thumb_image_path, c_time, msg, document_attributes, single_file, event)
-					#	continue
-					os.remove(single_file)
+
+			thumb_image_path = Path(f"{single_file}.jpg")
+			if not os.path.exists(thumb_image_path):
+				thumb_image_path = Path(f"{single_file}.webp")
+			elif not os.path.exists(thumb_image_path):
+				thumb_image_path = None
+
+			await upload(thumb_image_path, c_time, msg, single_file, event)
+
+			os.remove(single_file)
+
 		shutil.rmtree(out_folder)
 		LOGGER.warning(f"Cleaning : {out_folder}")
+
+		await msg.delete()
+		await event.reply("Playlist Uploaded Success! ✅")
+
 	if video:
+
 		for single_file in filename:
-			if os.path.exists(os.path.splitext(single_file)[0] + ".webp"):
-				im = Image.open(os.path.splitext(single_file)[0] + ".webp").convert("RGB")
-				im.save(os.path.splitext(single_file)[0] + ".jpg", "jpeg")
-				thumb_image_path = os.path.splitext(single_file)[0] + ".jpg"
-			if os.path.exists(single_file): 
-				LOGGER.info(f"Processing : {single_file}")
-				caption_rts = os.path.basename(single_file)
-				force_document = False
-				supports_streaming = True
-				document_attributes = []
-				if single_file.endswith((".mp4", ".mp3", ".flac", ".webm")):
-					metadata = extractMetadata(createParser(single_file))
-					duration = 0
-					width = 0
-					height = 0
-					if metadata.has("duration"):
-						duration = metadata.get('duration').seconds
-					#if os.path.exists(thumb_image_path):
-					#	metadata = extractMetadata(createParser(thumb_image_path))
-					#	if metadata.has("width"):
-					#		width = metadata.get("width")
-					#	if metadata.has("height"):
-					#		height = metadata.get("height")
-					#	document_attributes = [
-					#		DocumentAttributeVideo(
-					#			duration=duration,
-					#			w=width,
-					#			h=height,
-					#			round_message=False,
-					#			supports_streaming=True
-					#		)
-					#	]
-					await upload(thumb_image_path, c_time, msg, document_attributes, single_file, event)
-					#	continue
-					os.remove(single_file)
+
+			thumb_image_path = Path(f"{single_file}.jpg")
+			if not os.path.exists(thumb_image_path):
+				thumb_image_path = Path(f"{single_file}.webp")
+			elif not os.path.exists(thumb_image_path):
+				thumb_image_path = None
+
+			await upload(thumb_image_path, c_time, msg, single_file, event)
+
+			os.remove(single_file)
+
 		shutil.rmtree(out_folder)
 		LOGGER.warning(f"Cleaning : {out_folder}")
+
+		await msg.delete()
+		await event.reply("Playlist Uploaded Success! ✅")
 		
 def get_lst_of_files(input_directory, output_lst):
 	filesinfolder = os.listdir(input_directory)
@@ -294,6 +256,15 @@ def get_lst_of_files(input_directory, output_lst):
 			return get_lst_of_files(current_file_name, output_lst)
 		output_lst.append(current_file_name)
 	return output_lst
+
+
+@client.on(events.CallbackQuery(pattern='vid'))
+async def ptype_vid(event):
+	ptype = "video"
+
+@client.on(events.CallbackQuery(pattern='aud'))
+async def ptype_aud(event):
+	ptype = "audio"
  
 print("> Bot Started ")
 client.run_until_disconnected()
