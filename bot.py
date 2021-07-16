@@ -111,13 +111,15 @@ async def pingwithtg(event):
 @client.on(events.CallbackQuery(pattern='vid'))
 async def ptype_vid(event):
 	ptype = "video"
+	return ptype
 
 @client.on(events.CallbackQuery(pattern='aud'))
 async def ptype_aud(event):
 	ptype = "audio"
+	return ptype
 
 @client.on(events.NewMessage(pattern='^/playlist (.*)'))
-async def processing(event, ptype):
+async def processing(event):
 
 	out_folder = f"downloads/{event.sender_id}/"
 	if not os.path.isdir(out_folder):
