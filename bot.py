@@ -185,9 +185,8 @@ async def download_video(event):
     if song:
         for single_file in filename:
             if os.path.exists(single_file):
-                #LOGGER.info(f"Processing : {single_file}")
+                LOGGER.info(f"Processing : {single_file}")
                 caption_rts = os.path.basename(single_file)
-                print(caption_rts)
                 force_document = False
                 supports_streaming = False
                 document_attributes = []
