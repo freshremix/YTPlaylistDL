@@ -32,7 +32,7 @@ LOGGER = logging.getLogger(__name__)
 client = TelegramClient('bot', int(os.environ.get("APP_ID")), os.environ.get("API_HASH")).start(bot_token=os.environ.get("TOKEN"))
 
 # --- PROGRESS DEF --- #
-'''async def progress(current, total, event, start, type_of_ps, file_name=None):
+async def progress(current, total, event, start, type_of_ps, file_name=None):
 	now = time.time()
 	diff = now - start
 	if round(diff % 10.00) == 0 or current == total:
@@ -56,7 +56,7 @@ client = TelegramClient('bot', int(os.environ.get("APP_ID")), os.environ.get("AP
 			await event.edit("{}\n**File Name:** {}\n{}".format(
 				type_of_ps, file_name, tmp))
 		else:
-			await event.edit("{}\n{}".format(type_of_ps, tmp))'''
+			await event.edit("{}\n{}".format(type_of_ps, tmp))
 
 # --- HUMANBYTES DEF --- #
 def humanbytes(size):
@@ -83,6 +83,31 @@ def time_formatter(milliseconds: int) -> str:
 		((str(seconds) + " second(s), ") if seconds else "") + \
 		((str(milliseconds) + " millisecond(s), ") if milliseconds else "")
 	return tmp[:-2]
+
+# --- FILE UPLOAD DEF --- #
+async def upload(thumb_image_path, c_time, msg, document_attributes, single_file, curr):
+	try:
+		ytdl_data_name_audio = os.path.basename(single_file)
+		LOGGER.info(f"Uploading : {ytdl_data_name_audio}")
+		await client.send_file(
+			curr.chat_id,
+			single_file,
+			caption=f"**File Name:** __{ytdl_data_name_audio}__\n**Thanks for Using Bot**",
+			force_document=False,
+			supports_streaming=True,
+			allow_cache=False,
+			thumb=thumb_image_path,
+			reply_to=curr.message.id,
+			attributes=document_attributes,
+			progress_callback=lambda d, t: asyncio.get_event_loop(
+				).create_task(
+					progress(d, t, msg, c_time, "**💬 Uploading..**",
+					f"{ytdl_data_name_audio}")))
+	except Exception as e:
+		await client.send_message(
+			event.chat_id,
+			"{} caused {}".format(caption_rts, str(e)),
+		)
 
 @client.on(events.NewMessage(pattern='^/ping'))
 async def pingwithtg(event):
@@ -193,8 +218,6 @@ async def download_video(event):
 			if os.path.exists(single_file):
 				LOGGER.info(f"Processing : {single_file}")
 				caption_rts = os.path.basename(single_file)
-				force_document = False
-				supports_streaming = False
 				document_attributes = []
 				if single_file.endswith((".mp4", ".mp3", ".flac", ".webm")):
 					metadata = extractMetadata(createParser(single_file))
@@ -203,43 +226,23 @@ async def download_video(event):
 					height = 0
 					if metadata.has("duration"):
 						duration = metadata.get('duration').seconds
-					if os.path.exists(thumb_image_path):
-						metadata = extractMetadata(createParser(thumb_image_path))
-						if metadata.has("width"):
-							width = metadata.get("width")
-						if metadata.has("height"):
-							height = metadata.get("height")
-						document_attributes = [
-							DocumentAttributeVideo(
-								duration=duration,
-								w=width,
-								h=height,
-								round_message=False,
-								supports_streaming=True
-							)
-						]
-					try:
-						ytdl_data_name_audio = os.path.basename(single_file)
-						LOGGER.info(f"Uploading : {ytdl_data_name_audio}")
-						await client.send_file(
-							event.chat_id,
-							single_file,
-							caption=f"**File Name:** __{ytdl_data_name_audio}__\n**Thanks for Using Bot**",
-							force_document=force_document,
-							supports_streaming=supports_streaming,
-							allow_cache=False,
-							reply_to=event.message.id,
-							attributes=document_attributes)
-							#progress_callback=lambda d, t: asyncio.get_event_loop(
-							#	).create_task(
-							#		progress(d, t, msg, c_time, "**💬 Uploading..**",
-							#		f"{ytdl_data_name_audio}"))
-					except Exception as e:
-						await client.send_message(
-							event.chat_id,
-							"{} caused {}".format(caption_rts, str(e)),
-						)
-						continue
+					#if os.path.exists(thumb_image_path):
+					#	metadata = extractMetadata(createParser(thumb_image_path))
+					#	if metadata.has("width"):
+					#		width = metadata.get("width")
+					#	if metadata.has("height"):
+					#		height = metadata.get("height")
+					#	document_attributes = [
+					#		DocumentAttributeVideo(
+					#			duration=duration,
+					#			w=width,
+					#			h=height,
+					#			round_message=False,
+					#			supports_streaming=True
+					#		)
+					#	]
+					await upload(thumb_image_path, c_time, msg, document_attributes, single_file, event)
+					#	continue
 					os.remove(single_file)
 		shutil.rmtree(out_folder)
 		LOGGER.warning(f"Cleaning : {out_folder}")
@@ -262,43 +265,23 @@ async def download_video(event):
 					height = 0
 					if metadata.has("duration"):
 						duration = metadata.get('duration').seconds
-					if os.path.exists(thumb_image_path):
-						metadata = extractMetadata(createParser(thumb_image_path))
-						if metadata.has("width"):
-							width = metadata.get("width")
-						if metadata.has("height"):
-							height = metadata.get("height")
-						document_attributes = [
-							DocumentAttributeVideo(
-								duration=duration,
-								w=width,
-								h=height,
-								round_message=False,
-								supports_streaming=True
-							)
-						]
-					try:
-						ytdl_data_name_video = os.path.basename(single_file)
-						LOGGER.info(f"Uploading : {ytdl_data_name_video}")
-						await client.send_file(
-							event.chat_id,
-							single_file,
-							caption=f"**File Name:** __{ytdl_data_name_video}__\n**Thanks for Using Bot**",
-							force_document=force_document,
-							supports_streaming=supports_streaming,
-							allow_cache=False,
-							reply_to=event.message.id,
-							attributes=document_attributes)
-							#progress_callback=lambda d, t: asyncio.get_event_loop(
-							#	).create_task(
-							#		progress(d, t, msg, c_time, "**💬 Uploading..**",
-							#		f"{ytdl_data_name_video}")))
-					except Exception as e:
-						await client.send_message(
-							event.chat_id,
-							"{} caused {}".format(caption_rts, str(e)),
-						)
-						continue
+					#if os.path.exists(thumb_image_path):
+					#	metadata = extractMetadata(createParser(thumb_image_path))
+					#	if metadata.has("width"):
+					#		width = metadata.get("width")
+					#	if metadata.has("height"):
+					#		height = metadata.get("height")
+					#	document_attributes = [
+					#		DocumentAttributeVideo(
+					#			duration=duration,
+					#			w=width,
+					#			h=height,
+					#			round_message=False,
+					#			supports_streaming=True
+					#		)
+					#	]
+					await upload(thumb_image_path, c_time, msg, document_attributes, single_file, event)
+					#	continue
 					os.remove(single_file)
 		shutil.rmtree(out_folder)
 		LOGGER.warning(f"Cleaning : {out_folder}")
