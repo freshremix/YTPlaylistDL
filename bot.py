@@ -188,7 +188,7 @@ async def download_video(event):
 		for single_file in filename:
 			if os.path.exists(os.path.splitext(single_file)[0] + ".webp"):
 				im = Image.open(os.path.splitext(single_file)[0] + ".webp").convert("RGB")
-				im.save(os.path.splitext(single_file)[0] + ".jpg", ".jpeg")
+				im.save(os.path.splitext(single_file)[0] + ".jpg", "jpeg")
 				thumb_image_path = os.path.splitext(single_file)[0] + ".jpg"
 			if os.path.exists(single_file):
 				LOGGER.info(f"Processing : {single_file}")
@@ -247,7 +247,7 @@ async def download_video(event):
 		for single_file in filename:
 			if os.path.exists(os.path.splitext(single_file)[0] + ".webp"):
 				im = Image.open(os.path.splitext(single_file)[0] + ".webp").convert("RGB")
-				im.save(os.path.splitext(single_file)[0] + ".jpg", ".jpeg")
+				im.save(os.path.splitext(single_file)[0] + ".jpg", "jpeg")
 				thumb_image_path = os.path.splitext(single_file)[0] + ".jpg"
 			if os.path.exists(single_file): 
 				LOGGER.info(f"Processing : {single_file}")
@@ -277,6 +277,7 @@ async def download_video(event):
 								supports_streaming=True
 							)
 						]
+					try:
 						ytdl_data_name_video = os.path.basename(single_file)
 						LOGGER.info(f"Uploading : {ytdl_data_name_video}")
 						await client.send_file(
@@ -292,6 +293,7 @@ async def download_video(event):
 							#	).create_task(
 							#		progress(d, t, msg, c_time, "**💬 Uploading..**",
 							#		f"{ytdl_data_name_video}")))
+					except Exception as e:
 						await client.send_message(
 							event.chat_id,
 							"{} caused {}".format(caption_rts, str(e)),
