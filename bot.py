@@ -30,7 +30,7 @@ LOGGER = logging.getLogger(__name__)
 client = TelegramClient('bot', int(os.environ.get("APP_ID")), os.environ.get("API_HASH")).start(bot_token=os.environ.get("TOKEN"))
 
 # --- PROGRESS DEF --- #
-async def progress(current, total, event, start, type_of_ps, file_name=None):
+'''async def progress(current, total, event, start, type_of_ps, file_name=None):
     now = time.time()
     diff = now - start
     if round(diff % 10.00) == 0 or current == total:
@@ -54,7 +54,7 @@ async def progress(current, total, event, start, type_of_ps, file_name=None):
             await event.edit("{}\n**File Name:** {}\n{}".format(
                 type_of_ps, file_name, tmp))
         else:
-            await event.edit("{}\n{}".format(type_of_ps, tmp))
+            await event.edit("{}\n{}".format(type_of_ps, tmp))'''
 
 # --- HUMANBYTES DEF --- #
 def humanbytes(size):
@@ -220,10 +220,10 @@ async def download_video(event):
                             allow_cache=False,
                             reply_to=event.message.id,
                             attributes=document_attributes,
-                            progress_callback=lambda d, t: asyncio.get_event_loop(
+                            '''progress_callback=lambda d, t: asyncio.get_event_loop(
                                 ).create_task(
                                     progress(d, t, msg, c_time, "**💬 Uploading..**",
-                                    f"{ytdl_data_name_audio}")))
+                                    f"{ytdl_data_name_audio}"))''')
                     except Exception as e:
                         await client.send_message(
                             event.chat_id,
