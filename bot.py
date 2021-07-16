@@ -143,7 +143,7 @@ async def download_video(event):
         video = True
 
     try:
-        await msg.edit("Fetching playlist data...")
+        await msg.edit("**Downloading Playlist.**\nDo not add new tasks. Else **ban** from bot!")
         with YoutubeDL(opts) as ytdl:
             ytdl_data = ytdl.extract_info(url)
         filename = sorted(get_lst_of_files(out_folder, []))
@@ -177,7 +177,7 @@ async def download_video(event):
         await msg.edit(f"{str(type(e)): {str(e)}}")
         return
     c_time = time.time()
-    await msg.edit("YouTube Playlist Downloading Processing Now.\nDo not add new tasks. else Ban!")
+    await msg.edit("Downladed. Now Processing with FFmpeg")
     if song:
         for single_file in filename:
             if os.path.exists(single_file):
