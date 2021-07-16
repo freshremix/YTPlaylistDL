@@ -132,6 +132,8 @@ async def processing(event):
 			Button.inline('🎵 Audio', data='aud')
 		])
 
+	await ptype_vid()
+	await ptype_aud()
 	if ptype == "audio":
 		opts = {
 			'format':'bestaudio',
