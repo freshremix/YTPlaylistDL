@@ -118,7 +118,7 @@ async def ptype_aud(event):
 	ptype = "audio"
 
 @client.on(events.NewMessage(pattern='^/playlist (.*)'))
-async def download_video(event):
+async def processing(event):
 
 	out_folder = f"downloads/{event.sender_id}/"
 	if not os.path.isdir(out_folder):
@@ -126,12 +126,13 @@ async def download_video(event):
 		os.makedirs(out_folder)
 
 	url = event.pattern_match.group(1)
-
 	msg = await event.reply("💬 Choose file type before download.", buttons=[
 			Button.inline('📹 Video', data='vid'),
 			Button.inline('🎵 Audio', data='aud')
 		])
 
+	from ptype_aud import ptype
+	from ptype_vid import ptype
 	if ptype == "audio":
 		opts = {
 			'format':'bestaudio',
