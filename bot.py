@@ -82,6 +82,10 @@ def time_formatter(milliseconds: int) -> str:
         ((str(milliseconds) + " millisecond(s), ") if milliseconds else "")
     return tmp[:-2]
 
+@client.on(events.NewMessage(pattern='^/ping'))
+async def pingwithtg(event):
+    await event.reply("If you see this message, You verified Pedo")
+
 @client.on(events.NewMessage(pattern='^/playlist (audio|video) (.*)'))
 async def download_video(event):
 
