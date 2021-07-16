@@ -190,9 +190,9 @@ async def download_video(event):
 				results = YoutubeSearch(single_file, max_results=1).to_dict()
 				try:
 					thumbnail = results[0]["thumbnails"][0]
-					thumb_image_path = f'thumb-{single_file}.jpg'
+					thumb_image_path = out_folder + f'thumb-{single_file}.jpg'
 					thumb = requests.get(thumbnail, allow_redirects=True)
-					open(thumb_name, 'wb').write(thumb.content)
+					open(thumb_image_path, 'wb').write(thumb.content)
 				except Exception as e:
 					LOGGER.error(e)
 				LOGGER.info(f"Processing : {single_file}")
@@ -248,7 +248,7 @@ async def download_video(event):
 						)
 						continue
 					os.remove(single_file)
-					LOGGER.warning(f"Removing : {single_file}")
+				os.remove(thumb_image_path)
 		shutil.rmtree(out_folder)
 		LOGGER.warning(f"Cleaning : {out_folder}")
 	if video:
@@ -257,9 +257,9 @@ async def download_video(event):
 				results = YoutubeSearch(single_file, max_results=1).to_dict()
 				try:
 					thumbnail = results[0]["thumbnails"][0]
-					thumb_image_path = f'thumb-{single_file}.jpg'
+					thumb_image_path = out_folder + f'thumb-{single_file}.jpg'
 					thumb = requests.get(thumbnail, allow_redirects=True)
-					open(thumb_name, 'wb').write(thumb.content)
+					open(thumb_image_path, 'wb').write(thumb.content)
 				except Exception as e:
 					LOGGER.error(e) 
 				LOGGER.info(f"Processing : {single_file}")
@@ -317,7 +317,7 @@ async def download_video(event):
 						)
 						continue
 					os.remove(single_file)
-					LOGGER.warning(f"Removing : {single_file}")
+				os.remove(thumb_image_path)
 		shutil.rmtree(out_folder)
 		LOGGER.warning(f"Cleaning : {out_folder}")
 		
