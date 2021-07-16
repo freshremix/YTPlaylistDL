@@ -4,6 +4,7 @@ import math
 import asyncio
 import logging
 import requests
+from PIL import Image
 from youtube_dl import YoutubeDL
 from youtube_dl.utils import (DownloadError, ContentTooShortError,
 							  ExtractorError, GeoRestrictedError,
@@ -12,7 +13,6 @@ from youtube_dl.utils import (DownloadError, ContentTooShortError,
 from asyncio import sleep
 from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeVideo
 
-from youtube_search import YoutubeSearch
 from telethon import TelegramClient
 from telethon import events
 from telethon.sessions import StringSession
@@ -186,15 +186,11 @@ async def download_video(event):
 	await msg.edit("Downladed. Now Processing with FFmpeg")
 	if song:
 		for single_file in filename:
+			if os.path.exists(os.path.splitext(single_file)[0] + ".webp"):
+				im = Image.open(os.path.splitext(single_file)[0] + ".webp").convert("RGB")
+				im.save(os.path.splitext(single_file)[0] + ".jpg", ".jpeg")
+				thumb_image_path = os.path.splitext(single_file)[0] + ".jpg"
 			if os.path.exists(single_file):
-				results = YoutubeSearch(single_file, max_results=1).to_dict()
-				try:
-					thumbnail = results[0]["thumbnails"][0]
-					thumb_image_path = out_folder + f'thumb-{single_file}.jpg'
-					thumb = requests.get(thumbnail, allow_redirects=True)
-					open(thumb_image_path, 'wb').write(thumb.content)
-				except Exception as e:
-					LOGGER.error(e)
 				LOGGER.info(f"Processing : {single_file}")
 				caption_rts = os.path.basename(single_file)
 				force_document = False
@@ -205,26 +201,23 @@ async def download_video(event):
 					duration = 0
 					width = 0
 					height = 0
-				try:
 					if metadata.has("duration"):
 						duration = metadata.get('duration').seconds
-						if os.path.exists(thumb_image_path):
-							metadata = extractMetadata(createParser(thumb_image_path))
-							if metadata.has("width"):
-								width = metadata.get("width")
-							if metadata.has("height"):
-								height = metadata.get("height")
-							document_attributes = [
-								DocumentAttributeVideo(
-									duration=duration,
-									w=width,
-									h=height,
-									round_message=False,
-									supports_streaming=True
-								)
-							]
-				except Exception as e:
-					LOGGER.error(e)
+					if os.path.exists(thumb_image_path):
+						metadata = extractMetadata(createParser(thumb_image_path))
+						if metadata.has("width"):
+							width = metadata.get("width")
+						if metadata.has("height"):
+							height = metadata.get("height")
+						document_attributes = [
+							DocumentAttributeVideo(
+								duration=duration,
+								w=width,
+								h=height,
+								round_message=False,
+								supports_streaming=True
+							)
+						]
 					try:
 						ytdl_data_name_audio = os.path.basename(single_file)
 						LOGGER.info(f"Uploading : {ytdl_data_name_audio}")
@@ -248,20 +241,15 @@ async def download_video(event):
 						)
 						continue
 					os.remove(single_file)
-				os.remove(thumb_image_path)
 		shutil.rmtree(out_folder)
 		LOGGER.warning(f"Cleaning : {out_folder}")
 	if video:
 		for single_file in filename:
-			if os.path.exists(single_file):
-				results = YoutubeSearch(single_file, max_results=1).to_dict()
-				try:
-					thumbnail = results[0]["thumbnails"][0]
-					thumb_image_path = out_folder + f'thumb-{single_file}.jpg'
-					thumb = requests.get(thumbnail, allow_redirects=True)
-					open(thumb_image_path, 'wb').write(thumb.content)
-				except Exception as e:
-					LOGGER.error(e) 
+			if os.path.exists(os.path.splitext(single_file)[0] + ".webp"):
+				im = Image.open(os.path.splitext(single_file)[0] + ".webp").convert("RGB")
+				im.save(os.path.splitext(single_file)[0] + ".jpg", ".jpeg")
+				thumb_image_path = os.path.splitext(single_file)[0] + ".jpg"
+			if os.path.exists(single_file): 
 				LOGGER.info(f"Processing : {single_file}")
 				caption_rts = os.path.basename(single_file)
 				force_document = False
@@ -274,27 +262,21 @@ async def download_video(event):
 					height = 0
 					if metadata.has("duration"):
 						duration = metadata.get('duration').seconds
-				try:
-					if metadata.has("duration"):
-						duration = metadata.get('duration').seconds
-						if os.path.exists(thumb_image_path):
-							metadata = extractMetadata(createParser(thumb_image_path))
-							if metadata.has("width"):
-								width = metadata.get("width")
-							if metadata.has("height"):
-								height = metadata.get("height")
-							document_attributes = [
-								DocumentAttributeVideo(
-									duration=duration,
-									w=width,
-									h=height,
-									round_message=False,
-									supports_streaming=True
-								)
-							]
-				except Exception as e:
-					LOGGER.error(e)
-					try:
+					if os.path.exists(thumb_image_path):
+						metadata = extractMetadata(createParser(thumb_image_path))
+						if metadata.has("width"):
+							width = metadata.get("width")
+						if metadata.has("height"):
+							height = metadata.get("height")
+						document_attributes = [
+							DocumentAttributeVideo(
+								duration=duration,
+								w=width,
+								h=height,
+								round_message=False,
+								supports_streaming=True
+							)
+						]
 						ytdl_data_name_video = os.path.basename(single_file)
 						LOGGER.info(f"Uploading : {ytdl_data_name_video}")
 						await client.send_file(
@@ -317,7 +299,6 @@ async def download_video(event):
 						)
 						continue
 					os.remove(single_file)
-				os.remove(thumb_image_path)
 		shutil.rmtree(out_folder)
 		LOGGER.warning(f"Cleaning : {out_folder}")
 		
