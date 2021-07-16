@@ -104,6 +104,7 @@ async def upload(thumb_image_path, c_time, msg, single_file, curr):
 			"{} caused {}".format(caption_rts, str(e)),
 		)
 
+ptype = {}
 
 @client.on(events.NewMessage(pattern='^/ping'))
 async def pingwithtg(event):
@@ -131,8 +132,6 @@ async def processing(event):
 			Button.inline('🎵 Audio', data='aud')
 		])
 
-	from ptype_aud import ptype
-	from ptype_vid import ptype
 	if ptype == "audio":
 		opts = {
 			'format':'bestaudio',
