@@ -117,7 +117,7 @@ async def ptype_aud(event):
 	ptype = "audio"
 
 @client.on(events.NewMessage(pattern='^/playlist (.*)'))
-async def processing(event):
+async def processing(event, ptype):
 
 	out_folder = f"downloads/{event.sender_id}/"
 	if not os.path.isdir(out_folder):
