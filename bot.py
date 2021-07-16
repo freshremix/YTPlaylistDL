@@ -90,7 +90,7 @@ async def pingwithtg(event):
 async def download_video(event):
 
     out_folder = f"downloads/{event.sender_id}/"
-    thumb_image_path = "downloads/thumb_image.jpg"
+    #thumb_image_path = "downloads/thumb_image.jpg"
     if not os.path.isdir(out_folder):
         LOGGER.info(f"Creating folder \"{out_folder}\"")
         os.makedirs(out_folder)
@@ -185,6 +185,8 @@ async def download_video(event):
     if song:
         for single_file in filename:
             if os.path.exists(single_file):
+                thumb_image_path, vid_path = single_file
+                print("THUMB: " + thumb_image_path)
                 LOGGER.info(f"Processing : {single_file}")
                 caption_rts = os.path.basename(single_file)
                 force_document = False
