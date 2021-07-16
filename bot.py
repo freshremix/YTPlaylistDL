@@ -219,11 +219,11 @@ async def download_video(event):
                             supports_streaming=supports_streaming,
                             allow_cache=False,
                             reply_to=event.message.id,
-                            attributes=document_attributes,
+                            attributes=document_attributes)
                             '''progress_callback=lambda d, t: asyncio.get_event_loop(
                                 ).create_task(
                                     progress(d, t, msg, c_time, "**💬 Uploading..**",
-                                    f"{ytdl_data_name_audio}"))''')
+                                    f"{ytdl_data_name_audio}"))'''
                     except Exception as e:
                         await client.send_message(
                             event.chat_id,
