@@ -111,12 +111,10 @@ async def pingwithtg(event):
 @client.on(events.CallbackQuery(pattern='vid'))
 async def ptype_vid(event):
 	ptype = "video"
-	return ptype
 
 @client.on(events.CallbackQuery(pattern='aud'))
 async def ptype_aud(event):
 	ptype = "audio"
-	return ptype
 
 @client.on(events.NewMessage(pattern='^/playlist (.*)'))
 async def processing(event):
@@ -132,8 +130,6 @@ async def processing(event):
 			Button.inline('🎵 Audio', data='aud')
 		])
 
-	ptype = await ptype_vid(event)
-	ptype = await ptype_aud(event)
 	if ptype == "audio":
 		opts = {
 			'format':'bestaudio',
