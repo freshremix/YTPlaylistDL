@@ -134,8 +134,8 @@ async def processing(event):
 	url = event.pattern_match.group(1)
 	tdb[event.id] = url
 	msg = await event.reply("💬 Choose file type before download.", buttons=[
-			Button.inline('📹 Video', data='vid'),
-			Button.inline('🎵 Audio', data='aud')
+			Button.inline('📹 Video', data='vid_{}'.format(str(event.id))),
+			Button.inline('🎵 Audio', data='aud_{}'.format(str(event.id)))
 		])
 
 	# Bitch Stopppp!!! Wait till callback response 
