@@ -130,6 +130,7 @@ async def processing(event):
 			Button.inline('🎵 Audio', data='aud')
 		])
 
+        # Bitch Stopppp!!! Wait till callback response 
 	if ptype == "audio":
 		opts = {
 			'format':'bestaudio',
