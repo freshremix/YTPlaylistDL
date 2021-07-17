@@ -10,7 +10,7 @@ from youtube_dl.utils import (DownloadError, ContentTooShortError,
 							  UnavailableVideoError, XAttrMetadataError)
 from asyncio import sleep
 from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeVideo
-
+tdb = {}
 from telethon import TelegramClient
 from telethon import events, Button
 from telethon.sessions import StringSession
@@ -108,13 +108,20 @@ async def upload(thumb_image_path, c_time, msg, single_file, curr):
 async def pingwithtg(event):
 	await event.reply("If you see this message, You verified Pedo")
 
-@client.on(events.CallbackQuery(pattern='vid'))
-async def ptype_vid(event):
+@client.on(events.CallbackQuery(pattern='vid(_/(.*))'))
+async def ptype_vid(e):
+        event_id = int(((e.pattern_match.group(1).decode())).split("_", 1)[1])
 	ptype = "video"
+        url = tdb[event_id]
+        await download_process(url, ptype, event_id, e.chat_id)
 
-@client.on(events.CallbackQuery(pattern='aud'))
+@client.on(events.CallbackQuery(pattern='aud(_/(.*))'))
 async def ptype_aud(event):
+	event_id = int(((e.pattern_match.group(1).decode())).split("_", 1)[1])
 	ptype = "audio"
+        url = tdb[event_id]
+        await download_process(url, ptype, event_id, e.chat_id)
+
 
 @client.on(events.NewMessage(pattern='^/playlist (.*)'))
 async def processing(event):
@@ -123,14 +130,16 @@ async def processing(event):
 	if not os.path.isdir(out_folder):
 		LOGGER.info(f"Creating folder \"{out_folder}\"")
 		os.makedirs(out_folder)
-
-	url = event.pattern_match.group(1)
+        url = event.pattern_match.group(1)
+        tdb[event.id] = url
 	msg = await event.reply("💬 Choose file type before download.", buttons=[
 			Button.inline('📹 Video', data='vid'),
 			Button.inline('🎵 Audio', data='aud')
 		])
 
         # Bitch Stopppp!!! Wait till callback response 
+
+async def download_process(url, pytype, reply_id, chat_id):
 	if ptype == "audio":
 		opts = {
 			'format':'bestaudio',
@@ -176,7 +185,7 @@ async def processing(event):
 		}
 		song = False
 		video = True
-
+        msg = await client.send_message(chat_id, "Downloading Started..", reply_to=reply_to)
 	try:
 		await msg.edit("**Downloading Playlist.**\nDo not add new tasks. Else **ban** from bot!")
 		with YoutubeDL(opts) as ytdl:
@@ -232,7 +241,7 @@ async def processing(event):
 		LOGGER.warning(f"Cleaning : {out_folder}")
 
 		await msg.delete()
-		await event.reply("Playlist Uploaded Success! ✅")
+		await client.send_message(chat_id, "Playlist Uploaded Success! ✅")
 
 	if video:
 
@@ -252,8 +261,8 @@ async def processing(event):
 		LOGGER.warning(f"Cleaning : {out_folder}")
 
 		await msg.delete()
-		await event.reply("Playlist Uploaded Success! ✅")
-		
+		await client.send_message(chat_id, "Playlist Uploaded Success! ✅")
+
 def get_lst_of_files(input_directory, output_lst):
 	filesinfolder = os.listdir(input_directory)
 	for file_name in filesinfolder:
