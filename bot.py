@@ -111,17 +111,17 @@ async def pingwithtg(event):
 
 @client.on(events.CallbackQuery(pattern='vid(_/(.*))'))
 async def ptype_vid(e):
-        event_id = int(((e.pattern_match.group(1).decode())).split("_", 1)[1])
+	event_id = int(((e.pattern_match.group(1).decode())).split("_", 1)[1])
 	ptype = "video"
-        url = tdb[event_id]
-        await download_process(url, ptype, event_id, e.chat_id)
+	url = tdb[event_id]
+	await download_process(url, ptype, event_id, e.chat_id)
 
 @client.on(events.CallbackQuery(pattern='aud(_/(.*))'))
 async def ptype_aud(event):
 	event_id = int(((e.pattern_match.group(1).decode())).split("_", 1)[1])
 	ptype = "audio"
-        url = tdb[event_id]
-        await download_process(url, ptype, event_id, e.chat_id)
+	url = tdb[event_id]
+	await download_process(url, ptype, event_id, e.chat_id)
 
 
 @client.on(events.NewMessage(pattern='^/playlist (.*)'))
@@ -131,14 +131,14 @@ async def processing(event):
 	if not os.path.isdir(out_folder):
 		LOGGER.info(f"Creating folder \"{out_folder}\"")
 		os.makedirs(out_folder)
-        url = event.pattern_match.group(1)
-        tdb[event.id] = url
+	url = event.pattern_match.group(1)
+	tdb[event.id] = url
 	msg = await event.reply("💬 Choose file type before download.", buttons=[
 			Button.inline('📹 Video', data='vid'),
 			Button.inline('🎵 Audio', data='aud')
 		])
 
-        # Bitch Stopppp!!! Wait till callback response 
+	# Bitch Stopppp!!! Wait till callback response 
 
 async def download_process(url, pytype, reply_id, chat_id):
 	if ptype == "audio":
@@ -186,7 +186,7 @@ async def download_process(url, pytype, reply_id, chat_id):
 		}
 		song = False
 		video = True
-        msg = await client.send_message(chat_id, "Downloading Started..", reply_to=reply_to)
+	msg = await client.send_message(chat_id, "Downloading Started..", reply_to=reply_to)
 	try:
 		await msg.edit("**Downloading Playlist.**\nDo not add new tasks. Else **ban** from bot!")
 		with YoutubeDL(opts) as ytdl:
