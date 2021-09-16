@@ -27,7 +27,7 @@ logging.basicConfig(
 LOGGER = logging.getLogger(__name__)
 
 # --- CREATE TELEGRAM CLIENT --- #
-client = TelegramClient('bot', int(os.environ.get("APP_ID")), os.environ.get("API_HASH")).start(bot_token=os.environ.get("TOKEN"))
+client = TelegramClient('bot', int(os.environ.get("7475971")), os.environ.get("0e18ef2f6a5fc05aaab3d8a6010cce01")).start(bot_token=os.environ.get("1985126829:AAEh0XvGhb5Kzndy1BLdZzBf98x5KLH5jPs"))
 
 # --- PROGRESS DEF --- #
 async def progress(current, total, event, start, type_of_ps, file_name=None):
